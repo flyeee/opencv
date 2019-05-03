@@ -71,6 +71,7 @@ net = cv.dnn.readNet(cv.samples.findFile(args.proto), cv.samples.findFile(args.m
 
 cap = cv.VideoCapture(args.input if args.input else 0)
 
+
 while cv.waitKey(1) < 0:
     hasFrame, frame = cap.read()
     if not hasFrame:
@@ -79,12 +80,13 @@ while cv.waitKey(1) < 0:
 
     frameWidth = frame.shape[1]
     frameHeight = frame.shape[0]
-    inp = cv.dnn.blobFromImage(frame, inScale, (inWidth, inHeight),
-                              (0, 0, 0), swapRB=False, crop=False)
+
+    net = cv.dnn.readNetFromCaffe(args.proto, args.model)
+    inp = cv.dnn.blobFromImage(frame, 1.0 / 255, (inWidth, inHeight), (0, 0, 0), swapRB=False, crop=False)
     net.setInput(inp)
     out = net.forward()
 
-    assert(len(BODY_PARTS) <= out.shape[1])
+    #assert(len(BODY_PARTS) <= out.shape[1])
 
     points = []
     for i in range(len(BODY_PARTS)):
